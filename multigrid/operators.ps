@@ -1,0 +1,4760 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 18 36 594 756
+%%Title: Enscript Output
+%%Creator: GNU Enscript 1.6.5.90
+%%CreationDate: Thu Aug 12 14:55:38 2021
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6.5 90
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6.5 90
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-enscript 1.6.5 90
+%%IncludeResource: font Times-Bold
+%%IncludeResource: font Times-Roman
+
+% Fonts.
+/Times-Bold /HeaderFont-Bold MF
+/HeaderDateF /HeaderFont-Bold findfont 12 scalefont def
+
+/Times-Roman /HeaderFont-Times MF
+/HeaderHDRF /HeaderFont-Times findfont 14 scalefont def
+
+/HeaderPageNumF /Helvetica-Bold findfont 28.8 scalefont def
+
+/do_header {	% print enscript header
+  gsave
+    d_header_x d_header_y translate
+
+    % light bar
+    0 0 d_header_w d_header_h 2 div Box
+    .95 setgray fill
+
+    % dark gray boxes
+    /dbw d_header_h 2 mul def	% dark box width
+    /dbc .7 def			% dark box color
+
+    % left dark box.
+    0 0 dbw d_header_h Box
+    dbc setgray fill
+
+    0 setgray 
+    HeaderDateF setfont
+    moddatestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 2 div 2 add moveto show
+    modtimestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 5 div moveto show
+
+    % right dark box
+    d_header_w dbw sub 0 dbw d_header_h Box
+    dbc setgray fill
+
+    HeaderPageNumF setfont
+    1 setgray
+    pagenumstr dup
+    stringwidth pop dbw exch sub 2 div d_header_w dbw sub add
+    d_header_h .2 mul moveto show
+
+    % filename
+    0 setgray 
+    HeaderHDRF setfont
+    d_header_w fname stringwidth pop sub 2 div d_header_h 8 div moveto
+    fname show
+
+    % user supplied header string.
+    user_header_p {
+      /h d_header_h 8 div 5 mul def
+
+      % Implement strict enscript compatibility.
+      user_header_center_str () eq user_header_right_str () eq and {
+        d_header_w user_header_left_str stringwidth pop sub 2 div 
+        h moveto user_header_left_str show
+      } {
+        dbw 5 add h moveto user_header_left_str show
+
+        d_header_w user_header_center_str stringwidth pop sub 2 div 
+        h moveto user_header_center_str show
+
+	d_header_w dbw sub 5 sub user_header_right_str stringwidth pop
+	sub h moveto user_header_right_str show
+      } ifelse
+    } if
+
+  grestore
+} def
+%%EndResource
+/d_page_w 720 def
+/d_page_h 576 def
+/d_header_x 0 def
+/d_header_y 540 def
+/d_header_w 720 def
+/d_header_h 36 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 720 def
+/d_footer_h 0 def
+/d_output_w 720 def
+/d_output_h 540 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 1 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (1) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+30 527 M (1:) s
+/Courier-Oblique 10 10 SUF
+48 527 M
+(/*) s
+/F-gs-font 10 10 SF
+30 516 M (2:) s
+/Courier-Oblique 10 10 SUF
+48 516 M
+( *  Copyright 2010 NVIDIA Corporation) s
+/F-gs-font 10 10 SF
+30 505 M (3:) s
+/Courier-Oblique 10 10 SUF
+48 505 M
+( *) s
+/F-gs-font 10 10 SF
+30 494 M (4:) s
+/Courier-Oblique 10 10 SUF
+48 494 M
+( *  Licensed under the Apache License, Version 2.0 \(the "License"\);) s
+/F-gs-font 10 10 SF
+30 483 M (5:) s
+/Courier-Oblique 10 10 SUF
+48 483 M
+( *  you may not use this file except in compliance with the License.) s
+/F-gs-font 10 10 SF
+30 472 M (6:) s
+/Courier-Oblique 10 10 SUF
+48 472 M
+( *  You may obtain a copy of the License at) s
+/F-gs-font 10 10 SF
+30 461 M (7:) s
+/Courier-Oblique 10 10 SUF
+48 461 M
+( *) s
+/F-gs-font 10 10 SF
+30 450 M (8:) s
+/Courier-Oblique 10 10 SUF
+48 450 M
+( *      http://www.apache.org/licenses/LICENSE-2.0) s
+/F-gs-font 10 10 SF
+30 439 M (9:) s
+/Courier-Oblique 10 10 SUF
+48 439 M
+( *) s
+/F-gs-font 10 10 SF
+24 428 M (10:) s
+/Courier-Oblique 10 10 SUF
+48 428 M
+( *  Unless required by applicable law or agreed to in writing, software) s
+/F-gs-font 10 10 SF
+24 417 M (11:) s
+/Courier-Oblique 10 10 SUF
+48 417 M
+( *  distributed under the License is distributed on an "AS IS" BASIS,) s
+/F-gs-font 10 10 SF
+24 406 M (12:) s
+/Courier-Oblique 10 10 SUF
+48 406 M
+( *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.) s
+/F-gs-font 10 10 SF
+24 395 M (13:) s
+/Courier-Oblique 10 10 SUF
+48 395 M
+( *  See the License for the specific language governing permissions and) s
+/F-gs-font 10 10 SF
+24 384 M (14:) s
+/Courier-Oblique 10 10 SUF
+48 384 M
+( *  limitations under the License.) s
+/F-gs-font 10 10 SF
+24 373 M (15:) s
+/Courier-Oblique 10 10 SUF
+48 373 M
+( */) s
+/F-gs-font 10 10 SF
+24 362 M (16:) s
+24 351 M (17:) s
+48 351 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 351 M
+(include) s
+/F-gs-font 10 10 SF
+96 351 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 351 M
+("array1d.h") s
+/F-gs-font 10 10 SF
+24 340 M (18:) s
+24 329 M (19:) s
+/Courier-Bold 10 10 SUF
+48 329 M
+(struct) s
+/F-gs-font 10 10 SF
+84 329 M
+( EmptyStruct {) s
+24 318 M (20:) s
+48 318 M
+(};) s
+24 307 M (21:) s
+24 296 M (22:) s
+/Courier-Oblique 10 10 SUF
+48 296 M
+(// contaioner class that holds 2 params which can be passed recursively to children operators) s
+/F-gs-font 10 10 SF
+24 285 M (23:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+24 274 M (24:) s
+/Courier-Bold 10 10 SUF
+48 274 M
+(template) s
+/F-gs-font 10 10 SF
+96 274 M
+(<typename LPARM, typename RPARM>) s
+24 263 M (25:) s
+/Courier-Bold 10 10 SUF
+48 263 M
+(struct) s
+/F-gs-font 10 10 SF
+84 263 M
+( ParmPair {) s
+24 252 M (26:) s
+24 241 M (27:) s
+48 241 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 241 M
+(struct) s
+/F-gs-font 10 10 SF
+96 241 M
+( DeviceParm {) s
+24 230 M (28:) s
+48 230 M
+(    typename LPARM::DeviceParm left;) s
+24 219 M (29:) s
+48 219 M
+(    typename RPARM::DeviceParm right;) s
+24 208 M (30:) s
+48 208 M
+(  };) s
+24 197 M (31:) s
+24 186 M (32:) s
+24 175 M (33:) s
+48 175 M
+(  LPARM left;) s
+24 164 M (34:) s
+48 164 M
+(  RPARM right;) s
+24 153 M (35:) s
+48 153 M
+(  ParmPair\() s
+/Courier-Bold 10 10 SUF
+114 153 M
+(const) s
+/F-gs-font 10 10 SF
+144 153 M
+( LPARM &l, ) s
+/Courier-Bold 10 10 SUF
+210 153 M
+(const) s
+/F-gs-font 10 10 SF
+240 153 M
+( RPARM &r\) : left\(l\), right\(r\) { } ) s
+24 142 M (36:) s
+24 131 M (37:) s
+48 131 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 131 M
+(void) s
+/F-gs-font 10 10 SF
+84 131 M
+( set_kernel_data\(DeviceParm &dp\) ) s
+/Courier-Bold 10 10 SUF
+282 131 M
+(const) s
+/F-gs-font 10 10 SF
+312 131 M
+( {) s
+24 120 M (38:) s
+48 120 M
+(    left.set_kernel_data\(dp.left\);) s
+24 109 M (39:) s
+48 109 M
+(    right.set_kernel_data\(dp.right\);) s
+24 98 M (40:) s
+48 98 M
+(  }) s
+24 87 M (41:) s
+48 87 M
+(};) s
+24 76 M (42:) s
+24 65 M (43:) s
+24 54 M (44:) s
+/Courier-Bold 10 10 SUF
+48 54 M
+(template) s
+/F-gs-font 10 10 SF
+96 54 M
+(<typename LPARM, typename MPARM, typename RPARM>) s
+24 43 M (45:) s
+/Courier-Bold 10 10 SUF
+48 43 M
+(struct) s
+/F-gs-font 10 10 SF
+84 43 M
+( ParmTriple {) s
+24 32 M (46:) s
+24 21 M (47:) s
+48 21 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 21 M
+(struct) s
+/F-gs-font 10 10 SF
+96 21 M
+( DeviceParm {) s
+24 10 M (48:) s
+48 10 M
+(    typename LPARM::DeviceParm left;) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 2 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (2) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+24 527 M (49:) s
+48 527 M
+(    typename MPARM::DeviceParm middle;) s
+24 516 M (50:) s
+48 516 M
+(    typename RPARM::DeviceParm right;) s
+24 505 M (51:) s
+48 505 M
+(  };) s
+24 494 M (52:) s
+24 483 M (53:) s
+24 472 M (54:) s
+48 472 M
+(  LPARM left;) s
+24 461 M (55:) s
+48 461 M
+(  MPARM middle;) s
+24 450 M (56:) s
+48 450 M
+(  RPARM right;) s
+24 439 M (57:) s
+48 439 M
+(  ParmTriple\() s
+/Courier-Bold 10 10 SUF
+126 439 M
+(const) s
+/F-gs-font 10 10 SF
+156 439 M
+( LPARM &l, ) s
+/Courier-Bold 10 10 SUF
+222 439 M
+(const) s
+/F-gs-font 10 10 SF
+252 439 M
+( MPARM &m, ) s
+/Courier-Bold 10 10 SUF
+318 439 M
+(const) s
+/F-gs-font 10 10 SF
+348 439 M
+( RPARM &r\) : left\(l\), middle\(m\), right\(r\) { } ) s
+24 428 M (58:) s
+24 417 M (59:) s
+48 417 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 417 M
+(void) s
+/F-gs-font 10 10 SF
+84 417 M
+( set_kernel_data\(DeviceParm &dp\) ) s
+/Courier-Bold 10 10 SUF
+282 417 M
+(const) s
+/F-gs-font 10 10 SF
+312 417 M
+( {) s
+24 406 M (60:) s
+48 406 M
+(    left.set_kernel_data\(dp.left\);) s
+24 395 M (61:) s
+48 395 M
+(    middle.set_kernel_data\(dp.middle\);) s
+24 384 M (62:) s
+48 384 M
+(    right.set_kernel_data\(dp.right\);) s
+24 373 M (63:) s
+48 373 M
+(  }) s
+24 362 M (64:) s
+48 362 M
+(};) s
+24 351 M (65:) s
+24 340 M (66:) s
+/Courier-Oblique 10 10 SUF
+48 340 M
+(// Op classes have a method called exec\(int i, Param p\) that returns the value for loop index i) s
+/F-gs-font 10 10 SF
+24 329 M (67:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Oblique 10 10 SUF
+48 329 M
+(// and param p.  This might call p.value, or pass p down to their children) s
+/F-gs-font 10 10 SF
+24 318 M (68:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 318 M
+(template) s
+/F-gs-font 10 10 SF
+96 318 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 318 M
+(class) s
+/F-gs-font 10 10 SF
+132 318 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 318 M
+(class) s
+/F-gs-font 10 10 SF
+198 318 M
+( LPARM>) s
+24 307 M (69:) s
+/Courier-Bold 10 10 SUF
+48 307 M
+(struct) s
+/F-gs-font 10 10 SF
+84 307 M
+( UnaryOp {) s
+24 296 M (70:) s
+48 296 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 296 M
+(static) s
+/F-gs-font 10 10 SF
+96 296 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 296 M
+(bool) s
+/F-gs-font 10 10 SF
+126 296 M
+( validate\() s
+/Courier-Bold 10 10 SUF
+186 296 M
+(const) s
+/F-gs-font 10 10 SF
+216 296 M
+( Range &ord_rng, ) s
+/Courier-Bold 10 10 SUF
+318 296 M
+(const) s
+/F-gs-font 10 10 SF
+348 296 M
+( Range &idx_rng, ) s
+/Courier-Bold 10 10 SUF
+450 296 M
+(const) s
+/F-gs-font 10 10 SF
+480 296 M
+( LPARM &p\) {) s
+24 285 M (71:) s
+48 285 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 285 M
+(return) s
+/F-gs-font 10 10 SF
+108 285 M
+( LOP::validate\(ord_rng, idx_rng, p\);) s
+24 274 M (72:) s
+48 274 M
+(  } ) s
+24 263 M (73:) s
+24 252 M (74:) s
+48 252 M
+(};) s
+24 241 M (75:) s
+24 230 M (76:) s
+/Courier-Oblique 10 10 SUF
+48 230 M
+(// Op classes have a method called exec\(int i, Param p\) that returns the value for loop index i) s
+/F-gs-font 10 10 SF
+24 219 M (77:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Oblique 10 10 SUF
+48 219 M
+(// and param p.  This might call p.value, or pass p down to their children) s
+/F-gs-font 10 10 SF
+24 208 M (78:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 208 M
+(template) s
+/F-gs-font 10 10 SF
+96 208 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 208 M
+(class) s
+/F-gs-font 10 10 SF
+132 208 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 208 M
+(class) s
+/F-gs-font 10 10 SF
+198 208 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+234 208 M
+(class) s
+/F-gs-font 10 10 SF
+264 208 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+312 208 M
+(class) s
+/F-gs-font 10 10 SF
+342 208 M
+( RPARM>) s
+24 197 M (79:) s
+/Courier-Bold 10 10 SUF
+48 197 M
+(struct) s
+/F-gs-font 10 10 SF
+84 197 M
+( BinaryOp {) s
+24 186 M (80:) s
+48 186 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 186 M
+(static) s
+/F-gs-font 10 10 SF
+96 186 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 186 M
+(bool) s
+/F-gs-font 10 10 SF
+126 186 M
+( validate\() s
+/Courier-Bold 10 10 SUF
+186 186 M
+(const) s
+/F-gs-font 10 10 SF
+216 186 M
+( Range &ord_rng, ) s
+/Courier-Bold 10 10 SUF
+318 186 M
+(const) s
+/F-gs-font 10 10 SF
+348 186 M
+( Range &idx_rng, ) s
+/Courier-Bold 10 10 SUF
+450 186 M
+(const) s
+/F-gs-font 10 10 SF
+480 186 M
+( ParmPair<LPARM, RPARM> &p\) {) s
+24 175 M (81:) s
+48 175 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 175 M
+(return) s
+/F-gs-font 10 10 SF
+108 175 M
+( LOP::validate\(ord_rng, idx_rng, p.left\) && ROP::validate\(ord_rng, idx_rng, p.right\);) s
+24 164 M (82:) s
+48 164 M
+(  } ) s
+24 153 M (83:) s
+24 142 M (84:) s
+48 142 M
+(};) s
+24 131 M (85:) s
+24 120 M (86:) s
+/Courier-Bold 10 10 SUF
+48 120 M
+(template) s
+/F-gs-font 10 10 SF
+96 120 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 120 M
+(class) s
+/F-gs-font 10 10 SF
+132 120 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 120 M
+(class) s
+/F-gs-font 10 10 SF
+198 120 M
+( MOP, ) s
+/Courier-Bold 10 10 SUF
+234 120 M
+(class) s
+/F-gs-font 10 10 SF
+264 120 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+300 120 M
+(class) s
+/F-gs-font 10 10 SF
+330 120 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+378 120 M
+(class) s
+/F-gs-font 10 10 SF
+408 120 M
+( MPARM, ) s
+/Courier-Bold 10 10 SUF
+456 120 M
+(class) s
+/F-gs-font 10 10 SF
+486 120 M
+( RPARM>) s
+24 109 M (87:) s
+/Courier-Bold 10 10 SUF
+48 109 M
+(struct) s
+/F-gs-font 10 10 SF
+84 109 M
+( TernaryOp {) s
+24 98 M (88:) s
+48 98 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 98 M
+(static) s
+/F-gs-font 10 10 SF
+96 98 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 98 M
+(bool) s
+/F-gs-font 10 10 SF
+126 98 M
+( validate\() s
+/Courier-Bold 10 10 SUF
+186 98 M
+(const) s
+/F-gs-font 10 10 SF
+216 98 M
+( Range &ord_rng, ) s
+/Courier-Bold 10 10 SUF
+318 98 M
+(const) s
+/F-gs-font 10 10 SF
+348 98 M
+( Range &idx_rng, ) s
+/Courier-Bold 10 10 SUF
+450 98 M
+(const) s
+/F-gs-font 10 10 SF
+480 98 M
+( ParmTriple<LPARM, MPARM, RPARM> &p\) {) s
+24 87 M (89:) s
+48 87 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 87 M
+(return) s
+/F-gs-font 10 10 SF
+108 87 M
+( LOP::validate\(ord_rng, idx_rng, p.left\) && ) s
+24 76 M (90:) s
+48 76 M
+(           ) s
+/Courier-Bold 10 10 SUF
+114 76 M
+(MOP) s
+/F-gs-font 10 10 SF
+132 76 M
+(::validate\(ord_rng, idx_rng, p.middle\), ) s
+24 65 M (91:) s
+48 65 M
+(           ) s
+/Courier-Bold 10 10 SUF
+114 65 M
+(ROP) s
+/F-gs-font 10 10 SF
+132 65 M
+(::validate\(ord_rng, idx_rng, p.right\);) s
+24 54 M (92:) s
+48 54 M
+(  } ) s
+24 43 M (93:) s
+24 32 M (94:) s
+48 32 M
+(};) s
+24 21 M (95:) s
+24 10 M (96:) s
+/Courier-Bold 10 10 SUF
+48 10 M
+(template) s
+/F-gs-font 10 10 SF
+96 10 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 10 M
+(class) s
+/F-gs-font 10 10 SF
+132 10 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 10 M
+(class) s
+/F-gs-font 10 10 SF
+198 10 M
+( MOP, ) s
+/Courier-Bold 10 10 SUF
+234 10 M
+(class) s
+/F-gs-font 10 10 SF
+264 10 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+300 10 M
+(class) s
+/F-gs-font 10 10 SF
+330 10 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+378 10 M
+(class) s
+/F-gs-font 10 10 SF
+408 10 M
+( MPARM, ) s
+/Courier-Bold 10 10 SUF
+456 10 M
+(class) s
+/F-gs-font 10 10 SF
+486 10 M
+( RPARM>) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 3 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (3) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+24 527 M (97:) s
+/Courier-Bold 10 10 SUF
+48 527 M
+(struct) s
+/F-gs-font 10 10 SF
+84 527 M
+( MedianOp : ) s
+/Courier-Bold 10 10 SUF
+156 527 M
+(public) s
+/F-gs-font 10 10 SF
+192 527 M
+( TernaryOp<LOP, MOP, ROP, LPARM, MPARM, RPARM> {) s
+24 516 M (98:) s
+48 516 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 516 M
+(static) s
+/F-gs-font 10 10 SF
+162 516 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 516 M
+(double) s
+/F-gs-font 10 10 SF
+204 516 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 516 M
+(int) s
+/F-gs-font 10 10 SF
+258 516 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 516 M
+(int) s
+/F-gs-font 10 10 SF
+336 516 M
+( index, ) s
+/Courier-Bold 10 10 SUF
+384 516 M
+(const) s
+/F-gs-font 10 10 SF
+414 516 M
+( typename ParmTriple<LPARM, MPARM, RPARM>::DeviceP) s
+24 505 M (99:) s
+48 505 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 505 M
+(double) s
+/F-gs-font 10 10 SF
+108 505 M
+( a = LOP::exec\(ordinal, index, p.left\);) s
+18 494 M (100:) s
+48 494 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 494 M
+(double) s
+/F-gs-font 10 10 SF
+108 494 M
+( b = MOP::exec\(ordinal, index, p.middle\);) s
+18 483 M (101:) s
+48 483 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 483 M
+(double) s
+/F-gs-font 10 10 SF
+108 483 M
+( c = ROP::exec\(ordinal, index, p.right\); ) s
+18 472 M (102:) s
+48 472 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 472 M
+(return) s
+/F-gs-font 10 10 SF
+108 472 M
+( a < b ? ) s
+18 461 M (103:) s
+48 461 M
+(      \(b < c ? b : \(a < c ? c : a\)\) : ) s
+18 450 M (104:) s
+48 450 M
+(      \(a < c ? a : \(b < c ? c : b\)\);) s
+18 439 M (105:) s
+48 439 M
+(  }) s
+18 428 M (106:) s
+48 428 M
+(};) s
+18 417 M (107:) s
+18 406 M (108:) s
+/Courier-Bold 10 10 SUF
+48 406 M
+(template) s
+/F-gs-font 10 10 SF
+96 406 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 406 M
+(class) s
+/F-gs-font 10 10 SF
+132 406 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 406 M
+(class) s
+/F-gs-font 10 10 SF
+198 406 M
+( MOP, ) s
+/Courier-Bold 10 10 SUF
+234 406 M
+(class) s
+/F-gs-font 10 10 SF
+264 406 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+300 406 M
+(class) s
+/F-gs-font 10 10 SF
+330 406 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+378 406 M
+(class) s
+/F-gs-font 10 10 SF
+408 406 M
+( MPARM, ) s
+/Courier-Bold 10 10 SUF
+456 406 M
+(class) s
+/F-gs-font 10 10 SF
+486 406 M
+( RPARM>) s
+18 395 M (109:) s
+/Courier-Bold 10 10 SUF
+48 395 M
+(struct) s
+/F-gs-font 10 10 SF
+84 395 M
+( InRangeOp : ) s
+/Courier-Bold 10 10 SUF
+162 395 M
+(public) s
+/F-gs-font 10 10 SF
+198 395 M
+( TernaryOp<LOP, MOP, ROP, LPARM, MPARM, RPARM> {) s
+18 384 M (110:) s
+48 384 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 384 M
+(static) s
+/F-gs-font 10 10 SF
+162 384 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 384 M
+(double) s
+/F-gs-font 10 10 SF
+204 384 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 384 M
+(int) s
+/F-gs-font 10 10 SF
+258 384 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 384 M
+(int) s
+/F-gs-font 10 10 SF
+336 384 M
+( index, ) s
+/Courier-Bold 10 10 SUF
+384 384 M
+(const) s
+/F-gs-font 10 10 SF
+414 384 M
+( typename ParmTriple<LPARM, MPARM, RPARM>::DeviceP) s
+18 373 M (111:) s
+48 373 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 373 M
+(double) s
+/F-gs-font 10 10 SF
+108 373 M
+( a = LOP::exec\(ordinal, index, p.left\);) s
+18 362 M (112:) s
+48 362 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 362 M
+(return) s
+/F-gs-font 10 10 SF
+108 362 M
+( \(a >= MOP::exec\(ordinal, index, p.middle\) && a <= ROP::exec\(ordinal, index, p.right\)\) ? 1 : 0;) s
+18 351 M (113:) s
+48 351 M
+(  }) s
+18 340 M (114:) s
+48 340 M
+(};) s
+18 329 M (115:) s
+18 318 M (116:) s
+/Courier-Bold 10 10 SUF
+48 318 M
+(template) s
+/F-gs-font 10 10 SF
+96 318 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 318 M
+(class) s
+/F-gs-font 10 10 SF
+132 318 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 318 M
+(class) s
+/F-gs-font 10 10 SF
+198 318 M
+( LPARM>) s
+18 307 M (117:) s
+/Courier-Bold 10 10 SUF
+48 307 M
+(struct) s
+/F-gs-font 10 10 SF
+84 307 M
+( NegateOp : ) s
+/Courier-Bold 10 10 SUF
+156 307 M
+(public) s
+/F-gs-font 10 10 SF
+192 307 M
+( UnaryOp<LOP, LPARM> {) s
+18 296 M (118:) s
+48 296 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 296 M
+(static) s
+/F-gs-font 10 10 SF
+162 296 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 296 M
+(double) s
+/F-gs-font 10 10 SF
+204 296 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 296 M
+(int) s
+/F-gs-font 10 10 SF
+258 296 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 296 M
+(int) s
+/F-gs-font 10 10 SF
+336 296 M
+( index, ) s
+/Courier-Bold 10 10 SUF
+384 296 M
+(const) s
+/F-gs-font 10 10 SF
+414 296 M
+( typename LPARM::DeviceParm &p\) {) s
+18 285 M (119:) s
+48 285 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 285 M
+(return) s
+/F-gs-font 10 10 SF
+108 285 M
+( -LOP::exec\(ordinal, index, p\);) s
+18 274 M (120:) s
+48 274 M
+(  }) s
+18 263 M (121:) s
+48 263 M
+(};) s
+18 252 M (122:) s
+18 241 M (123:) s
+/Courier-Bold 10 10 SUF
+48 241 M
+(template) s
+/F-gs-font 10 10 SF
+96 241 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 241 M
+(class) s
+/F-gs-font 10 10 SF
+132 241 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 241 M
+(class) s
+/F-gs-font 10 10 SF
+198 241 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+234 241 M
+(class) s
+/F-gs-font 10 10 SF
+264 241 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+312 241 M
+(class) s
+/F-gs-font 10 10 SF
+342 241 M
+( RPARM>) s
+18 230 M (124:) s
+/Courier-Bold 10 10 SUF
+48 230 M
+(struct) s
+/F-gs-font 10 10 SF
+84 230 M
+( MultOp : ) s
+/Courier-Bold 10 10 SUF
+144 230 M
+(public) s
+/F-gs-font 10 10 SF
+180 230 M
+( BinaryOp<LOP, ROP, LPARM, RPARM> {) s
+18 219 M (125:) s
+48 219 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 219 M
+(static) s
+/F-gs-font 10 10 SF
+162 219 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 219 M
+(double) s
+/F-gs-font 10 10 SF
+204 219 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 219 M
+(int) s
+/F-gs-font 10 10 SF
+258 219 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 219 M
+(int) s
+/F-gs-font 10 10 SF
+336 219 M
+( index, ) s
+/Courier-Bold 10 10 SUF
+384 219 M
+(const) s
+/F-gs-font 10 10 SF
+414 219 M
+( typename ParmPair<LPARM, RPARM>::DeviceParm &p\) {) s
+18 208 M (126:) s
+48 208 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 208 M
+(return) s
+/F-gs-font 10 10 SF
+108 208 M
+( LOP::exec\(ordinal, index,p.left\) * ROP::exec\(ordinal, index,p.right\); ) s
+18 197 M (127:) s
+48 197 M
+(  }) s
+18 186 M (128:) s
+48 186 M
+(};) s
+18 175 M (129:) s
+18 164 M (130:) s
+18 153 M (131:) s
+/Courier-Bold 10 10 SUF
+48 153 M
+(template) s
+/F-gs-font 10 10 SF
+96 153 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 153 M
+(class) s
+/F-gs-font 10 10 SF
+132 153 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 153 M
+(class) s
+/F-gs-font 10 10 SF
+198 153 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+234 153 M
+(class) s
+/F-gs-font 10 10 SF
+264 153 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+312 153 M
+(class) s
+/F-gs-font 10 10 SF
+342 153 M
+( RPARM>) s
+18 142 M (132:) s
+/Courier-Bold 10 10 SUF
+48 142 M
+(struct) s
+/F-gs-font 10 10 SF
+84 142 M
+( AddOp : ) s
+/Courier-Bold 10 10 SUF
+138 142 M
+(public) s
+/F-gs-font 10 10 SF
+174 142 M
+( BinaryOp<LOP, ROP, LPARM, RPARM> {) s
+18 131 M (133:) s
+48 131 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 131 M
+(static) s
+/F-gs-font 10 10 SF
+162 131 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 131 M
+(double) s
+/F-gs-font 10 10 SF
+204 131 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 131 M
+(int) s
+/F-gs-font 10 10 SF
+258 131 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 131 M
+(int) s
+/F-gs-font 10 10 SF
+336 131 M
+( index, ) s
+/Courier-Bold 10 10 SUF
+384 131 M
+(const) s
+/F-gs-font 10 10 SF
+414 131 M
+( typename ParmPair<LPARM, RPARM>::DeviceParm &p\) {) s
+18 120 M (134:) s
+48 120 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 120 M
+(return) s
+/F-gs-font 10 10 SF
+108 120 M
+( LOP::exec\(ordinal,index,p.left\) + ROP::exec\(ordinal,index,p.right\); ) s
+18 109 M (135:) s
+48 109 M
+(  }) s
+18 98 M (136:) s
+48 98 M
+(};) s
+18 87 M (137:) s
+18 76 M (138:) s
+18 65 M (139:) s
+/Courier-Bold 10 10 SUF
+48 65 M
+(template) s
+/F-gs-font 10 10 SF
+96 65 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 65 M
+(class) s
+/F-gs-font 10 10 SF
+132 65 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 65 M
+(class) s
+/F-gs-font 10 10 SF
+198 65 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+234 65 M
+(class) s
+/F-gs-font 10 10 SF
+264 65 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+312 65 M
+(class) s
+/F-gs-font 10 10 SF
+342 65 M
+( RPARM>) s
+18 54 M (140:) s
+/Courier-Bold 10 10 SUF
+48 54 M
+(struct) s
+/F-gs-font 10 10 SF
+84 54 M
+( SubOp : ) s
+/Courier-Bold 10 10 SUF
+138 54 M
+(public) s
+/F-gs-font 10 10 SF
+174 54 M
+( BinaryOp<LOP, ROP, LPARM, RPARM> {) s
+18 43 M (141:) s
+48 43 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 43 M
+(static) s
+/F-gs-font 10 10 SF
+162 43 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 43 M
+(double) s
+/F-gs-font 10 10 SF
+204 43 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 43 M
+(int) s
+/F-gs-font 10 10 SF
+258 43 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 43 M
+(int) s
+/F-gs-font 10 10 SF
+336 43 M
+( index, ) s
+/Courier-Bold 10 10 SUF
+384 43 M
+(const) s
+/F-gs-font 10 10 SF
+414 43 M
+( typename ParmPair<LPARM, RPARM>::DeviceParm &p\) {) s
+18 32 M (142:) s
+48 32 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 32 M
+(return) s
+/F-gs-font 10 10 SF
+108 32 M
+( LOP::exec\(ordinal,index,p.left\) - ROP::exec\(ordinal,index,p.right\); ) s
+18 21 M (143:) s
+48 21 M
+(  }) s
+18 10 M (144:) s
+48 10 M
+(};) s
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 4 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (4) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 527 M (145:) s
+18 516 M (146:) s
+18 505 M (147:) s
+/Courier-Bold 10 10 SUF
+48 505 M
+(template) s
+/F-gs-font 10 10 SF
+96 505 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 505 M
+(class) s
+/F-gs-font 10 10 SF
+132 505 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 505 M
+(class) s
+/F-gs-font 10 10 SF
+198 505 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+234 505 M
+(class) s
+/F-gs-font 10 10 SF
+264 505 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+312 505 M
+(class) s
+/F-gs-font 10 10 SF
+342 505 M
+( RPARM>) s
+18 494 M (148:) s
+/Courier-Bold 10 10 SUF
+48 494 M
+(struct) s
+/F-gs-font 10 10 SF
+84 494 M
+( DivOp : ) s
+/Courier-Bold 10 10 SUF
+138 494 M
+(public) s
+/F-gs-font 10 10 SF
+174 494 M
+( BinaryOp<LOP, ROP, LPARM, RPARM> {) s
+18 483 M (149:) s
+48 483 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 483 M
+(static) s
+/F-gs-font 10 10 SF
+162 483 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 483 M
+(double) s
+/F-gs-font 10 10 SF
+204 483 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 483 M
+(int) s
+/F-gs-font 10 10 SF
+258 483 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 483 M
+(int) s
+/F-gs-font 10 10 SF
+336 483 M
+( index, ) s
+/Courier-Bold 10 10 SUF
+384 483 M
+(const) s
+/F-gs-font 10 10 SF
+414 483 M
+( typename ParmPair<LPARM, RPARM>::DeviceParm &p\) {) s
+18 472 M (150:) s
+48 472 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 472 M
+(return) s
+/F-gs-font 10 10 SF
+108 472 M
+( LOP::exec\(ordinal, index, p.left\) / ROP::exec\(ordinal,index,p.right\); ) s
+18 461 M (151:) s
+48 461 M
+(  }) s
+18 450 M (152:) s
+48 450 M
+(};) s
+18 439 M (153:) s
+18 428 M (154:) s
+18 417 M (155:) s
+/Courier-Bold 10 10 SUF
+48 417 M
+(template) s
+/F-gs-font 10 10 SF
+96 417 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 417 M
+(class) s
+/F-gs-font 10 10 SF
+132 417 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 417 M
+(class) s
+/F-gs-font 10 10 SF
+198 417 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+234 417 M
+(class) s
+/F-gs-font 10 10 SF
+264 417 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+312 417 M
+(class) s
+/F-gs-font 10 10 SF
+342 417 M
+( RPARM>) s
+18 406 M (156:) s
+/Courier-Bold 10 10 SUF
+48 406 M
+(struct) s
+/F-gs-font 10 10 SF
+84 406 M
+( MinOp : ) s
+/Courier-Bold 10 10 SUF
+138 406 M
+(public) s
+/F-gs-font 10 10 SF
+174 406 M
+( BinaryOp<LOP, ROP, LPARM, RPARM> {) s
+18 395 M (157:) s
+48 395 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 395 M
+(static) s
+/F-gs-font 10 10 SF
+162 395 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 395 M
+(double) s
+/F-gs-font 10 10 SF
+204 395 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 395 M
+(int) s
+/F-gs-font 10 10 SF
+258 395 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 395 M
+(int) s
+/F-gs-font 10 10 SF
+336 395 M
+( index,  ) s
+/Courier-Bold 10 10 SUF
+390 395 M
+(const) s
+/F-gs-font 10 10 SF
+420 395 M
+( typename ParmPair<LPARM, RPARM>::DeviceParm &p\) ) s
+18 384 M (158:) s
+48 384 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 384 M
+(return) s
+/F-gs-font 10 10 SF
+108 384 M
+( fminf\(LOP::exec\(ordinal,index,p.left\), ROP::exec\(ordinal, index,p.right\)\);) s
+18 373 M (159:) s
+48 373 M
+(  }) s
+18 362 M (160:) s
+48 362 M
+(};) s
+18 351 M (161:) s
+18 340 M (162:) s
+18 329 M (163:) s
+/Courier-Bold 10 10 SUF
+48 329 M
+(template) s
+/F-gs-font 10 10 SF
+96 329 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 329 M
+(class) s
+/F-gs-font 10 10 SF
+132 329 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 329 M
+(class) s
+/F-gs-font 10 10 SF
+198 329 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+234 329 M
+(class) s
+/F-gs-font 10 10 SF
+264 329 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+312 329 M
+(class) s
+/F-gs-font 10 10 SF
+342 329 M
+( RPARM>) s
+18 318 M (164:) s
+/Courier-Bold 10 10 SUF
+48 318 M
+(struct) s
+/F-gs-font 10 10 SF
+84 318 M
+( MaxOp : ) s
+/Courier-Bold 10 10 SUF
+138 318 M
+(public) s
+/F-gs-font 10 10 SF
+174 318 M
+( BinaryOp<LOP, ROP, LPARM, RPARM> {) s
+18 307 M (165:) s
+48 307 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 307 M
+(static) s
+/F-gs-font 10 10 SF
+162 307 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 307 M
+(double) s
+/F-gs-font 10 10 SF
+204 307 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 307 M
+(int) s
+/F-gs-font 10 10 SF
+258 307 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 307 M
+(int) s
+/F-gs-font 10 10 SF
+336 307 M
+( index,  ) s
+/Courier-Bold 10 10 SUF
+390 307 M
+(const) s
+/F-gs-font 10 10 SF
+420 307 M
+( typename ParmPair<LPARM, RPARM>::DeviceParm &p\) ) s
+18 296 M (166:) s
+48 296 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 296 M
+(return) s
+/F-gs-font 10 10 SF
+108 296 M
+( fmaxf\(LOP::exec\(ordinal, index, p.left\),ROP::exec\(ordinal, index, p.right\)\);) s
+18 285 M (167:) s
+48 285 M
+(  }) s
+18 274 M (168:) s
+48 274 M
+(};) s
+18 263 M (169:) s
+18 252 M (170:) s
+18 241 M (171:) s
+18 230 M (172:) s
+/Courier-Bold 10 10 SUF
+48 230 M
+(template) s
+/F-gs-font 10 10 SF
+96 230 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 230 M
+(class) s
+/F-gs-font 10 10 SF
+132 230 M
+( PARM>) s
+18 219 M (173:) s
+/Courier-Bold 10 10 SUF
+48 219 M
+(struct) s
+/F-gs-font 10 10 SF
+84 219 M
+( LeafOp {) s
+18 208 M (174:) s
+48 208 M
+(  __device__ ) s
+/Courier-Bold 10 10 SUF
+126 208 M
+(static) s
+/F-gs-font 10 10 SF
+162 208 M
+( ) s
+/Courier-Bold 10 10 SUF
+168 208 M
+(double) s
+/F-gs-font 10 10 SF
+204 208 M
+( exec\() s
+/Courier-Bold 10 10 SUF
+240 208 M
+(int) s
+/F-gs-font 10 10 SF
+258 208 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+318 208 M
+(int) s
+/F-gs-font 10 10 SF
+336 208 M
+( index,  ) s
+/Courier-Bold 10 10 SUF
+390 208 M
+(const) s
+/F-gs-font 10 10 SF
+420 208 M
+( typename PARM::DeviceParm &p\) {) s
+18 197 M (175:) s
+48 197 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 197 M
+(return) s
+/F-gs-font 10 10 SF
+108 197 M
+( p.value\(ordinal, index\);) s
+18 186 M (176:) s
+48 186 M
+(  }) s
+18 175 M (177:) s
+48 175 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 175 M
+(static) s
+/F-gs-font 10 10 SF
+96 175 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 175 M
+(bool) s
+/F-gs-font 10 10 SF
+126 175 M
+( validate\() s
+/Courier-Bold 10 10 SUF
+186 175 M
+(const) s
+/F-gs-font 10 10 SF
+216 175 M
+( Range &ord_rng, ) s
+/Courier-Bold 10 10 SUF
+318 175 M
+(const) s
+/F-gs-font 10 10 SF
+348 175 M
+( Range &idx_rng, ) s
+/Courier-Bold 10 10 SUF
+450 175 M
+(const) s
+/F-gs-font 10 10 SF
+480 175 M
+( PARM &p\) {) s
+18 164 M (178:) s
+48 164 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 164 M
+(return) s
+/F-gs-font 10 10 SF
+108 164 M
+( p.validate\(ord_rng, idx_rng\);) s
+18 153 M (179:) s
+48 153 M
+(  } ) s
+18 142 M (180:) s
+18 131 M (181:) s
+48 131 M
+(};) s
+18 120 M (182:) s
+18 109 M (183:) s
+/Courier-Bold 10 10 SUF
+48 109 M
+(struct) s
+/F-gs-font 10 10 SF
+84 109 M
+( IndexParm {) s
+18 98 M (184:) s
+48 98 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 98 M
+(struct) s
+/F-gs-font 10 10 SF
+96 98 M
+( DeviceParm {) s
+18 87 M (185:) s
+48 87 M
+(    __device__ ) s
+/Courier-Bold 10 10 SUF
+138 87 M
+(double) s
+/F-gs-font 10 10 SF
+174 87 M
+( value\() s
+/Courier-Bold 10 10 SUF
+216 87 M
+(int) s
+/F-gs-font 10 10 SF
+234 87 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+294 87 M
+(int) s
+/F-gs-font 10 10 SF
+312 87 M
+( index\) ) s
+/Courier-Bold 10 10 SUF
+360 87 M
+(const) s
+/F-gs-font 10 10 SF
+390 87 M
+( { ) s
+/Courier-Bold 10 10 SUF
+408 87 M
+(return) s
+/F-gs-font 10 10 SF
+444 87 M
+( index; }) s
+18 76 M (186:) s
+48 76 M
+(  };) s
+18 65 M (187:) s
+18 54 M (188:) s
+48 54 M
+(  IndexParm\(\) { }) s
+18 43 M (189:) s
+48 43 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 43 M
+(bool) s
+/F-gs-font 10 10 SF
+84 43 M
+( validate\() s
+/Courier-Bold 10 10 SUF
+144 43 M
+(const) s
+/F-gs-font 10 10 SF
+174 43 M
+( Range &ord_rng, ) s
+/Courier-Bold 10 10 SUF
+276 43 M
+(const) s
+/F-gs-font 10 10 SF
+306 43 M
+( Range &idx_rng\) ) s
+/Courier-Bold 10 10 SUF
+408 43 M
+(const) s
+/F-gs-font 10 10 SF
+438 43 M
+( { ) s
+/Courier-Bold 10 10 SUF
+456 43 M
+(return) s
+/F-gs-font 10 10 SF
+492 43 M
+( true; }) s
+18 32 M (190:) s
+48 32 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 32 M
+(void) s
+/F-gs-font 10 10 SF
+84 32 M
+( set_kernel_data\(DeviceParm &dp\) ) s
+/Courier-Bold 10 10 SUF
+282 32 M
+(const) s
+/F-gs-font 10 10 SF
+312 32 M
+( {}) s
+18 21 M (191:) s
+48 21 M
+(};) s
+18 10 M (192:) s
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 5 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (5) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 527 M (193:) s
+/Courier-Bold 10 10 SUF
+48 527 M
+(struct) s
+/F-gs-font 10 10 SF
+84 527 M
+( RandParm {) s
+18 516 M (194:) s
+48 516 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 516 M
+(struct) s
+/F-gs-font 10 10 SF
+96 516 M
+( DeviceParm {) s
+18 505 M (195:) s
+48 505 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 505 M
+(int) s
+/F-gs-font 10 10 SF
+90 505 M
+( _seed;) s
+18 494 M (196:) s
+48 494 M
+(    __device__ ) s
+/Courier-Bold 10 10 SUF
+138 494 M
+(double) s
+/F-gs-font 10 10 SF
+174 494 M
+( value\() s
+/Courier-Bold 10 10 SUF
+216 494 M
+(int) s
+/F-gs-font 10 10 SF
+234 494 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+294 494 M
+(int) s
+/F-gs-font 10 10 SF
+312 494 M
+( index\) ) s
+/Courier-Bold 10 10 SUF
+360 494 M
+(const) s
+/F-gs-font 10 10 SF
+390 494 M
+( { ) s
+18 483 M (197:) s
+48 483 M
+(      index ^= _seed;) s
+18 472 M (198:) s
+48 472 M
+(      index = \(index+0x7ed55d16\) + \(index<<12\);) s
+18 461 M (199:) s
+48 461 M
+(      index = \(index^0xc761c23c\) ^ \(index>>19\);) s
+18 450 M (200:) s
+48 450 M
+(      index = \(index+0x165667b1\) + \(index<<5\);) s
+18 439 M (201:) s
+48 439 M
+(      index = \(index+0xd3a2646c\) ^ \(index<<9\);) s
+18 428 M (202:) s
+48 428 M
+(      index = \(index+0xfd7046c5\) + \(index<<3\);) s
+18 417 M (203:) s
+48 417 M
+(      index = \(index^0xb55a4f09\) ^ \(index>>16\);) s
+18 406 M (204:) s
+18 395 M (205:) s
+48 395 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 395 M
+(return) s
+/F-gs-font 10 10 SF
+120 395 M
+( \(index + 1.0f\) / 4294967296.0f;) s
+18 384 M (206:) s
+48 384 M
+(    }) s
+18 373 M (207:) s
+48 373 M
+(  };) s
+18 362 M (208:) s
+18 351 M (209:) s
+48 351 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 351 M
+(int) s
+/F-gs-font 10 10 SF
+78 351 M
+( _seed;) s
+18 340 M (210:) s
+48 340 M
+(  RandParm\() s
+/Courier-Bold 10 10 SUF
+114 340 M
+(int) s
+/F-gs-font 10 10 SF
+132 340 M
+( seed\) : _seed\(seed\) { }) s
+18 329 M (211:) s
+48 329 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 329 M
+(bool) s
+/F-gs-font 10 10 SF
+84 329 M
+( validate\() s
+/Courier-Bold 10 10 SUF
+144 329 M
+(const) s
+/F-gs-font 10 10 SF
+174 329 M
+( Range &ord_rng, ) s
+/Courier-Bold 10 10 SUF
+276 329 M
+(const) s
+/F-gs-font 10 10 SF
+306 329 M
+( Range &idx_rng\) ) s
+/Courier-Bold 10 10 SUF
+408 329 M
+(const) s
+/F-gs-font 10 10 SF
+438 329 M
+( { ) s
+/Courier-Bold 10 10 SUF
+456 329 M
+(return) s
+/F-gs-font 10 10 SF
+492 329 M
+( true; }) s
+18 318 M (212:) s
+48 318 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 318 M
+(void) s
+/F-gs-font 10 10 SF
+84 318 M
+( set_kernel_data\(DeviceParm &dp\) ) s
+/Courier-Bold 10 10 SUF
+282 318 M
+(const) s
+/F-gs-font 10 10 SF
+312 318 M
+( { dp._seed = _seed; }) s
+18 307 M (213:) s
+48 307 M
+(};) s
+18 296 M (214:) s
+18 285 M (215:) s
+18 274 M (216:) s
+/Courier-Oblique 10 10 SUF
+48 274 M
+(// Param classes all take the appropriate data in a constructor, and have a method) s
+/F-gs-font 10 10 SF
+18 263 M (217:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Oblique 10 10 SUF
+48 263 M
+(// called value\(int i\) that returns the param's value for loop index i.) s
+/F-gs-font 10 10 SF
+18 252 M (218:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 252 M
+(struct) s
+/F-gs-font 10 10 SF
+84 252 M
+( ConstantParm {) s
+18 241 M (219:) s
+48 241 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 241 M
+(struct) s
+/F-gs-font 10 10 SF
+96 241 M
+( DeviceParm {) s
+18 230 M (220:) s
+48 230 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 230 M
+(double) s
+/F-gs-font 10 10 SF
+108 230 M
+( _value;) s
+18 219 M (221:) s
+48 219 M
+(    __device__ ) s
+/Courier-Bold 10 10 SUF
+138 219 M
+(double) s
+/F-gs-font 10 10 SF
+174 219 M
+( value\() s
+/Courier-Bold 10 10 SUF
+216 219 M
+(int) s
+/F-gs-font 10 10 SF
+234 219 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+294 219 M
+(int) s
+/F-gs-font 10 10 SF
+312 219 M
+( index\) ) s
+/Courier-Bold 10 10 SUF
+360 219 M
+(const) s
+/F-gs-font 10 10 SF
+390 219 M
+( { ) s
+/Courier-Bold 10 10 SUF
+408 219 M
+(return) s
+/F-gs-font 10 10 SF
+444 219 M
+( _value; }) s
+18 208 M (222:) s
+48 208 M
+(  };) s
+18 197 M (223:) s
+18 186 M (224:) s
+48 186 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 186 M
+(double) s
+/F-gs-font 10 10 SF
+96 186 M
+( _value;) s
+18 175 M (225:) s
+18 164 M (226:) s
+48 164 M
+(  ConstantParm\() s
+/Courier-Bold 10 10 SUF
+138 164 M
+(double) s
+/F-gs-font 10 10 SF
+174 164 M
+( f\) : _value\(f\) { }) s
+18 153 M (227:) s
+48 153 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 153 M
+(bool) s
+/F-gs-font 10 10 SF
+84 153 M
+( validate\() s
+/Courier-Bold 10 10 SUF
+144 153 M
+(const) s
+/F-gs-font 10 10 SF
+174 153 M
+( Range &ord_rng, ) s
+/Courier-Bold 10 10 SUF
+276 153 M
+(const) s
+/F-gs-font 10 10 SF
+306 153 M
+( Range &idx_rng\) ) s
+/Courier-Bold 10 10 SUF
+408 153 M
+(const) s
+/F-gs-font 10 10 SF
+438 153 M
+( { ) s
+/Courier-Bold 10 10 SUF
+456 153 M
+(return) s
+/F-gs-font 10 10 SF
+492 153 M
+( true; }) s
+18 142 M (228:) s
+48 142 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 142 M
+(void) s
+/F-gs-font 10 10 SF
+84 142 M
+( set_kernel_data\(DeviceParm &dp\) ) s
+/Courier-Bold 10 10 SUF
+282 142 M
+(const) s
+/F-gs-font 10 10 SF
+312 142 M
+( { dp._value = _value; }) s
+18 131 M (229:) s
+18 120 M (230:) s
+48 120 M
+(};) s
+18 109 M (231:) s
+18 98 M (232:) s
+/Courier-Bold 10 10 SUF
+48 98 M
+(struct) s
+/F-gs-font 10 10 SF
+84 98 M
+( ArrayLookupIndexParm {) s
+18 87 M (233:) s
+48 87 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 87 M
+(struct) s
+/F-gs-font 10 10 SF
+96 87 M
+( DeviceParm {) s
+18 76 M (234:) s
+48 76 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 76 M
+(const) s
+/F-gs-font 10 10 SF
+102 76 M
+( ) s
+/Courier-Bold 10 10 SUF
+108 76 M
+(double) s
+/F-gs-font 10 10 SF
+144 76 M
+( *_ptr;) s
+18 65 M (235:) s
+48 65 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 65 M
+(int) s
+/F-gs-font 10 10 SF
+90 65 M
+( _shift;) s
+18 54 M (236:) s
+18 43 M (237:) s
+48 43 M
+(    __device__ ) s
+/Courier-Bold 10 10 SUF
+138 43 M
+(double) s
+/F-gs-font 10 10 SF
+174 43 M
+( value\() s
+/Courier-Bold 10 10 SUF
+216 43 M
+(int) s
+/F-gs-font 10 10 SF
+234 43 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+294 43 M
+(int) s
+/F-gs-font 10 10 SF
+312 43 M
+( index\) ) s
+/Courier-Bold 10 10 SUF
+360 43 M
+(const) s
+/F-gs-font 10 10 SF
+390 43 M
+( { ) s
+18 32 M (238:) s
+48 32 M
+(        ) s
+/Courier-Bold 10 10 SUF
+96 32 M
+(return) s
+/F-gs-font 10 10 SF
+132 32 M
+( _ptr[index + _shift];) s
+18 21 M (239:) s
+48 21 M
+(    };) s
+18 10 M (240:) s
+48 10 M
+(  };) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 6 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (6) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 527 M (241:) s
+18 516 M (242:) s
+48 516 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 516 M
+(const) s
+/F-gs-font 10 10 SF
+90 516 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 516 M
+(double) s
+/F-gs-font 10 10 SF
+132 516 M
+( *_ptr;) s
+18 505 M (243:) s
+48 505 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 505 M
+(int) s
+/F-gs-font 10 10 SF
+78 505 M
+( _shift;) s
+18 494 M (244:) s
+48 494 M
+(  Range _rng;  ) s
+/Courier-Oblique 10 10 SUF
+138 494 M
+(// valid range of _ptr[i] accesses) s
+/F-gs-font 10 10 SF
+18 483 M (245:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 472 M (246:) s
+48 472 M
+(  ArrayLookupIndexParm\() s
+/Courier-Bold 10 10 SUF
+186 472 M
+(const) s
+/F-gs-font 10 10 SF
+216 472 M
+( DeviceArray1D &grid, ) s
+/Courier-Bold 10 10 SUF
+348 472 M
+(int) s
+/F-gs-font 10 10 SF
+366 472 M
+( shift\) :) s
+18 461 M (247:) s
+48 461 M
+(    _ptr\(&grid.at\(0\)\), _shift\(shift\), _rng\(grid.valid_range\(\)\) { }) s
+18 450 M (248:) s
+18 439 M (249:) s
+48 439 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 439 M
+(bool) s
+/F-gs-font 10 10 SF
+84 439 M
+(  validate\() s
+/Courier-Bold 10 10 SUF
+150 439 M
+(const) s
+/F-gs-font 10 10 SF
+180 439 M
+( Range &ord_rng, ) s
+/Courier-Bold 10 10 SUF
+282 439 M
+(const) s
+/F-gs-font 10 10 SF
+312 439 M
+( Range &idx_rng\) ) s
+/Courier-Bold 10 10 SUF
+414 439 M
+(const) s
+/F-gs-font 10 10 SF
+444 439 M
+( { ) s
+18 428 M (250:) s
+48 428 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 428 M
+(return) s
+/F-gs-font 10 10 SF
+108 428 M
+( _rng.contains\(idx_rng.shift\(_shift\)\);  ) s
+18 417 M (251:) s
+48 417 M
+(  }) s
+18 406 M (252:) s
+18 395 M (253:) s
+48 395 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 395 M
+(void) s
+/F-gs-font 10 10 SF
+84 395 M
+( set_kernel_data\(DeviceParm &dp\) ) s
+/Courier-Bold 10 10 SUF
+282 395 M
+(const) s
+/F-gs-font 10 10 SF
+312 395 M
+( { ) s
+18 384 M (254:) s
+48 384 M
+(    dp._ptr = _ptr; ) s
+18 373 M (255:) s
+48 373 M
+(    dp._shift= _shift;) s
+18 362 M (256:) s
+48 362 M
+(  }) s
+18 351 M (257:) s
+18 340 M (258:) s
+18 329 M (259:) s
+48 329 M
+(};) s
+18 318 M (260:) s
+18 307 M (261:) s
+18 296 M (262:) s
+/Courier-Bold 10 10 SUF
+48 296 M
+(struct) s
+/F-gs-font 10 10 SF
+84 296 M
+( ArrayLookupOrdinalParm {) s
+18 285 M (263:) s
+48 285 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 285 M
+(struct) s
+/F-gs-font 10 10 SF
+96 285 M
+( DeviceParm {) s
+18 274 M (264:) s
+48 274 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 274 M
+(const) s
+/F-gs-font 10 10 SF
+102 274 M
+( ) s
+/Courier-Bold 10 10 SUF
+108 274 M
+(double) s
+/F-gs-font 10 10 SF
+144 274 M
+( *_ptr;) s
+18 263 M (265:) s
+48 263 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 263 M
+(int) s
+/F-gs-font 10 10 SF
+90 263 M
+( _start;) s
+18 252 M (266:) s
+48 252 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 252 M
+(int) s
+/F-gs-font 10 10 SF
+90 252 M
+( _stride;) s
+18 241 M (267:) s
+18 230 M (268:) s
+48 230 M
+(    __device__ ) s
+/Courier-Bold 10 10 SUF
+138 230 M
+(double) s
+/F-gs-font 10 10 SF
+174 230 M
+( value\() s
+/Courier-Bold 10 10 SUF
+216 230 M
+(int) s
+/F-gs-font 10 10 SF
+234 230 M
+( ordinal, ) s
+/Courier-Bold 10 10 SUF
+294 230 M
+(int) s
+/F-gs-font 10 10 SF
+312 230 M
+( index\) ) s
+/Courier-Bold 10 10 SUF
+360 230 M
+(const) s
+/F-gs-font 10 10 SF
+390 230 M
+( { ) s
+18 219 M (269:) s
+48 219 M
+(        ) s
+/Courier-Bold 10 10 SUF
+96 219 M
+(return) s
+/F-gs-font 10 10 SF
+132 219 M
+( _ptr[\(ordinal * _stride\) + _start];) s
+18 208 M (270:) s
+48 208 M
+(    };) s
+18 197 M (271:) s
+48 197 M
+(  };) s
+18 186 M (272:) s
+18 175 M (273:) s
+48 175 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 175 M
+(const) s
+/F-gs-font 10 10 SF
+90 175 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 175 M
+(double) s
+/F-gs-font 10 10 SF
+132 175 M
+( *_ptr;) s
+18 164 M (274:) s
+48 164 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 164 M
+(int) s
+/F-gs-font 10 10 SF
+78 164 M
+( _start;) s
+18 153 M (275:) s
+48 153 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 153 M
+(int) s
+/F-gs-font 10 10 SF
+78 153 M
+( _stride;) s
+18 142 M (276:) s
+48 142 M
+(  Range _rng;  ) s
+/Courier-Oblique 10 10 SUF
+138 142 M
+(// valid range of _ptr[i] accesses) s
+/F-gs-font 10 10 SF
+18 131 M (277:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 120 M (278:) s
+48 120 M
+(  ArrayLookupOrdinalParm\() s
+/Courier-Bold 10 10 SUF
+198 120 M
+(const) s
+/F-gs-font 10 10 SF
+228 120 M
+( DeviceArray1D &grid, ) s
+/Courier-Bold 10 10 SUF
+360 120 M
+(int) s
+/F-gs-font 10 10 SF
+378 120 M
+( start, ) s
+/Courier-Bold 10 10 SUF
+426 120 M
+(int) s
+/F-gs-font 10 10 SF
+444 120 M
+( stride\) :) s
+18 109 M (279:) s
+48 109 M
+(    _ptr\(&grid.at\(0\)\), _start\(start\), _stride\(stride\), _rng\(grid.valid_range\(\)\) { }) s
+18 98 M (280:) s
+18 87 M (281:) s
+48 87 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 87 M
+(bool) s
+/F-gs-font 10 10 SF
+84 87 M
+(  validate\() s
+/Courier-Bold 10 10 SUF
+150 87 M
+(const) s
+/F-gs-font 10 10 SF
+180 87 M
+( Range &ord_rng, ) s
+/Courier-Bold 10 10 SUF
+282 87 M
+(const) s
+/F-gs-font 10 10 SF
+312 87 M
+( Range &idx_rng\) ) s
+/Courier-Bold 10 10 SUF
+414 87 M
+(const) s
+/F-gs-font 10 10 SF
+444 87 M
+( { ) s
+18 76 M (282:) s
+48 76 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 76 M
+(return) s
+/F-gs-font 10 10 SF
+108 76 M
+( _rng.contains\(ord_rng.stride\(_stride\).shift\(_start\)\);  ) s
+18 65 M (283:) s
+48 65 M
+(  }) s
+18 54 M (284:) s
+18 43 M (285:) s
+48 43 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 43 M
+(void) s
+/F-gs-font 10 10 SF
+84 43 M
+( set_kernel_data\(DeviceParm &dp\) ) s
+/Courier-Bold 10 10 SUF
+282 43 M
+(const) s
+/F-gs-font 10 10 SF
+312 43 M
+( { ) s
+18 32 M (286:) s
+48 32 M
+(    dp._ptr = _ptr; ) s
+18 21 M (287:) s
+48 21 M
+(    dp._start = _start;  ) s
+18 10 M (288:) s
+48 10 M
+(    dp._stride = _stride;) s
+_R
+S
+%%Page: (7) 7
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 7 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (7) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 527 M (289:) s
+48 527 M
+(  }) s
+18 516 M (290:) s
+18 505 M (291:) s
+48 505 M
+(};) s
+18 494 M (292:) s
+18 483 M (293:) s
+18 472 M (294:) s
+/Courier-Oblique 10 10 SUF
+48 472 M
+(/////////////////////////////////////////////////////////////////////////////////////////////////) s
+/F-gs-font 10 10 SF
+18 461 M (295:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Oblique 10 10 SUF
+48 461 M
+(// operators) s
+/F-gs-font 10 10 SF
+18 450 M (296:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Oblique 10 10 SUF
+48 450 M
+(/////////////////////////////////////////////////////////////////////////////////////////////////) s
+/F-gs-font 10 10 SF
+18 439 M (297:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 428 M (298:) s
+/Courier-Bold 10 10 SUF
+48 428 M
+(template) s
+/F-gs-font 10 10 SF
+96 428 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 428 M
+(class) s
+/F-gs-font 10 10 SF
+132 428 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 428 M
+(class) s
+/F-gs-font 10 10 SF
+198 428 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 428 M
+(class) s
+/F-gs-font 10 10 SF
+276 428 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 428 M
+(class) s
+/F-gs-font 10 10 SF
+342 428 M
+( RPARM>) s
+18 417 M (299:) s
+48 417 M
+(OpWithParm<MultOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 406 M (300:) s
+/Courier-Bold 10 10 SUF
+48 406 M
+(mult) s
+/F-gs-font 10 10 SF
+72 406 M
+(\() s
+/Courier-Bold 10 10 SUF
+78 406 M
+(const) s
+/F-gs-font 10 10 SF
+108 406 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+294 406 M
+(const) s
+/F-gs-font 10 10 SF
+324 406 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 395 M (301:) s
+48 395 M
+({) s
+18 384 M (302:) s
+48 384 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 384 M
+(return) s
+/F-gs-font 10 10 SF
+96 384 M
+( OpWithParm<MultOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >\(ParmPair<LPARM, RPARM>\(left.parm, ) s
+18 373 M (303:) s
+48 373 M
+(};) s
+18 362 M (304:) s
+18 351 M (305:) s
+/Courier-Bold 10 10 SUF
+48 351 M
+(template) s
+/F-gs-font 10 10 SF
+96 351 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 351 M
+(class) s
+/F-gs-font 10 10 SF
+132 351 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 351 M
+(class) s
+/F-gs-font 10 10 SF
+198 351 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 351 M
+(class) s
+/F-gs-font 10 10 SF
+276 351 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 351 M
+(class) s
+/F-gs-font 10 10 SF
+342 351 M
+( RPARM>) s
+18 340 M (306:) s
+48 340 M
+(OpWithParm<MultOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 329 M (307:) s
+/Courier-Bold 10 10 SUF
+48 329 M
+(operator) s
+/F-gs-font 10 10 SF
+96 329 M
+(*\() s
+/Courier-Bold 10 10 SUF
+108 329 M
+(const) s
+/F-gs-font 10 10 SF
+138 329 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+324 329 M
+(const) s
+/F-gs-font 10 10 SF
+354 329 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 318 M (308:) s
+48 318 M
+({) s
+18 307 M (309:) s
+48 307 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 307 M
+(return) s
+/F-gs-font 10 10 SF
+96 307 M
+( mult\(left, right\);) s
+18 296 M (310:) s
+48 296 M
+(};) s
+18 285 M (311:) s
+18 274 M (312:) s
+18 263 M (313:) s
+/Courier-Bold 10 10 SUF
+48 263 M
+(template) s
+/F-gs-font 10 10 SF
+96 263 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 263 M
+(class) s
+/F-gs-font 10 10 SF
+132 263 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 263 M
+(class) s
+/F-gs-font 10 10 SF
+198 263 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 263 M
+(class) s
+/F-gs-font 10 10 SF
+276 263 M
+( MOP, ) s
+/Courier-Bold 10 10 SUF
+312 263 M
+(class) s
+/F-gs-font 10 10 SF
+342 263 M
+( MPARM, ) s
+/Courier-Bold 10 10 SUF
+390 263 M
+(class) s
+/F-gs-font 10 10 SF
+420 263 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+456 263 M
+(class) s
+/F-gs-font 10 10 SF
+486 263 M
+( RPARM>) s
+18 252 M (314:) s
+48 252 M
+(OpWithParm<InRangeOp<LOP, MOP, ROP, LPARM, MPARM, RPARM>, ParmTriple<LPARM, MPARM, RPARM> >) s
+18 241 M (315:) s
+/Courier-Bold 10 10 SUF
+48 241 M
+(inrange) s
+/F-gs-font 10 10 SF
+90 241 M
+(\() s
+/Courier-Bold 10 10 SUF
+96 241 M
+(const) s
+/F-gs-font 10 10 SF
+126 241 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+312 241 M
+(const) s
+/F-gs-font 10 10 SF
+342 241 M
+( OpWithParm<MOP, MPARM> &middle, ) s
+/Courier-Bold 10 10 SUF
+540 241 M
+(const) s
+/F-gs-font 10 10 SF
+570 241 M
+( OpWithParm<ROP, RPARM> ) s
+18 230 M (316:) s
+48 230 M
+({) s
+18 219 M (317:) s
+48 219 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 219 M
+(return) s
+/F-gs-font 10 10 SF
+96 219 M
+( OpWithParm<InRangeOp<LOP, MOP, ROP, LPARM, MPARM, RPARM>, ParmTriple<LPARM, MPARM, RPARM> >\() s
+18 208 M (318:) s
+48 208 M
+(    ParmTriple<LPARM, MPARM, RPARM>\(left.parm, middle.parm, right.parm\) \);) s
+18 197 M (319:) s
+48 197 M
+(};) s
+18 186 M (320:) s
+18 175 M (321:) s
+/Courier-Bold 10 10 SUF
+48 175 M
+(template) s
+/F-gs-font 10 10 SF
+96 175 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 175 M
+(class) s
+/F-gs-font 10 10 SF
+132 175 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 175 M
+(class) s
+/F-gs-font 10 10 SF
+198 175 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 175 M
+(class) s
+/F-gs-font 10 10 SF
+276 175 M
+( MOP, ) s
+/Courier-Bold 10 10 SUF
+312 175 M
+(class) s
+/F-gs-font 10 10 SF
+342 175 M
+( MPARM, ) s
+/Courier-Bold 10 10 SUF
+390 175 M
+(class) s
+/F-gs-font 10 10 SF
+420 175 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+456 175 M
+(class) s
+/F-gs-font 10 10 SF
+486 175 M
+( RPARM>) s
+18 164 M (322:) s
+48 164 M
+(OpWithParm<MedianOp<LOP, MOP, ROP, LPARM, MPARM, RPARM>, ParmTriple<LPARM, MPARM, RPARM> >) s
+18 153 M (323:) s
+/Courier-Bold 10 10 SUF
+48 153 M
+(median) s
+/F-gs-font 10 10 SF
+84 153 M
+(\() s
+/Courier-Bold 10 10 SUF
+90 153 M
+(const) s
+/F-gs-font 10 10 SF
+120 153 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+306 153 M
+(const) s
+/F-gs-font 10 10 SF
+336 153 M
+( OpWithParm<MOP, MPARM> &middle, ) s
+/Courier-Bold 10 10 SUF
+534 153 M
+(const) s
+/F-gs-font 10 10 SF
+564 153 M
+( OpWithParm<ROP, RPARM> &) s
+18 142 M (324:) s
+48 142 M
+({) s
+18 131 M (325:) s
+48 131 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 131 M
+(return) s
+/F-gs-font 10 10 SF
+96 131 M
+( OpWithParm<MedianOp<LOP, MOP, ROP, LPARM, MPARM, RPARM>, ParmTriple<LPARM, MPARM, RPARM> >\() s
+18 120 M (326:) s
+48 120 M
+(    ParmTriple<LPARM, MPARM, RPARM>\(left.parm, middle.parm, right.parm\) \);) s
+18 109 M (327:) s
+48 109 M
+(};) s
+18 98 M (328:) s
+18 87 M (329:) s
+/Courier-Bold 10 10 SUF
+48 87 M
+(template) s
+/F-gs-font 10 10 SF
+96 87 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 87 M
+(class) s
+/F-gs-font 10 10 SF
+132 87 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 87 M
+(class) s
+/F-gs-font 10 10 SF
+198 87 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 87 M
+(class) s
+/F-gs-font 10 10 SF
+276 87 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 87 M
+(class) s
+/F-gs-font 10 10 SF
+342 87 M
+( RPARM>) s
+18 76 M (330:) s
+48 76 M
+(OpWithParm<MinOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 65 M (331:) s
+/Courier-Bold 10 10 SUF
+48 65 M
+(minop) s
+/F-gs-font 10 10 SF
+78 65 M
+(\() s
+/Courier-Bold 10 10 SUF
+84 65 M
+(const) s
+/F-gs-font 10 10 SF
+114 65 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+300 65 M
+(const) s
+/F-gs-font 10 10 SF
+330 65 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 54 M (332:) s
+48 54 M
+({) s
+18 43 M (333:) s
+48 43 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 43 M
+(return) s
+/F-gs-font 10 10 SF
+96 43 M
+( OpWithParm<MinOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >\(ParmPair<LPARM, RPARM>\(left.parm, r) s
+18 32 M (334:) s
+48 32 M
+(};) s
+18 21 M (335:) s
+18 10 M (336:) s
+/Courier-Bold 10 10 SUF
+48 10 M
+(template) s
+/F-gs-font 10 10 SF
+96 10 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 10 M
+(class) s
+/F-gs-font 10 10 SF
+132 10 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 10 M
+(class) s
+/F-gs-font 10 10 SF
+198 10 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 10 M
+(class) s
+/F-gs-font 10 10 SF
+276 10 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 10 M
+(class) s
+/F-gs-font 10 10 SF
+342 10 M
+( RPARM>) s
+_R
+S
+%%Page: (8) 8
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 8 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (8) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 527 M (337:) s
+48 527 M
+(OpWithParm<MaxOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 516 M (338:) s
+/Courier-Bold 10 10 SUF
+48 516 M
+(maxop) s
+/F-gs-font 10 10 SF
+78 516 M
+(\() s
+/Courier-Bold 10 10 SUF
+84 516 M
+(const) s
+/F-gs-font 10 10 SF
+114 516 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+300 516 M
+(const) s
+/F-gs-font 10 10 SF
+330 516 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 505 M (339:) s
+48 505 M
+({) s
+18 494 M (340:) s
+48 494 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 494 M
+(return) s
+/F-gs-font 10 10 SF
+96 494 M
+( OpWithParm<MaxOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >\(ParmPair<LPARM, RPARM>\(left.parm, r) s
+18 483 M (341:) s
+48 483 M
+(};) s
+18 472 M (342:) s
+18 461 M (343:) s
+/Courier-Bold 10 10 SUF
+48 461 M
+(template) s
+/F-gs-font 10 10 SF
+96 461 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 461 M
+(class) s
+/F-gs-font 10 10 SF
+132 461 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 461 M
+(class) s
+/F-gs-font 10 10 SF
+198 461 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 461 M
+(class) s
+/F-gs-font 10 10 SF
+276 461 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 461 M
+(class) s
+/F-gs-font 10 10 SF
+342 461 M
+( RPARM>) s
+18 450 M (344:) s
+48 450 M
+(OpWithParm<AddOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 439 M (345:) s
+/Courier-Bold 10 10 SUF
+48 439 M
+(add) s
+/F-gs-font 10 10 SF
+66 439 M
+(\() s
+/Courier-Bold 10 10 SUF
+72 439 M
+(const) s
+/F-gs-font 10 10 SF
+102 439 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+288 439 M
+(const) s
+/F-gs-font 10 10 SF
+318 439 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 428 M (346:) s
+48 428 M
+({) s
+18 417 M (347:) s
+48 417 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 417 M
+(return) s
+/F-gs-font 10 10 SF
+96 417 M
+( OpWithParm<AddOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >\(ParmPair<LPARM, RPARM>\(left.parm, r) s
+18 406 M (348:) s
+48 406 M
+(};) s
+18 395 M (349:) s
+18 384 M (350:) s
+/Courier-Bold 10 10 SUF
+48 384 M
+(template) s
+/F-gs-font 10 10 SF
+96 384 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 384 M
+(class) s
+/F-gs-font 10 10 SF
+132 384 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 384 M
+(class) s
+/F-gs-font 10 10 SF
+198 384 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 384 M
+(class) s
+/F-gs-font 10 10 SF
+276 384 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 384 M
+(class) s
+/F-gs-font 10 10 SF
+342 384 M
+( RPARM>) s
+18 373 M (351:) s
+48 373 M
+(OpWithParm<AddOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 362 M (352:) s
+/Courier-Bold 10 10 SUF
+48 362 M
+(operator) s
+/F-gs-font 10 10 SF
+96 362 M
+(+\() s
+/Courier-Bold 10 10 SUF
+108 362 M
+(const) s
+/F-gs-font 10 10 SF
+138 362 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+324 362 M
+(const) s
+/F-gs-font 10 10 SF
+354 362 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 351 M (353:) s
+48 351 M
+({) s
+18 340 M (354:) s
+48 340 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 340 M
+(return) s
+/F-gs-font 10 10 SF
+96 340 M
+( add\(left, right\); ) s
+18 329 M (355:) s
+48 329 M
+(};) s
+18 318 M (356:) s
+18 307 M (357:) s
+18 296 M (358:) s
+/Courier-Bold 10 10 SUF
+48 296 M
+(template) s
+/F-gs-font 10 10 SF
+96 296 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 296 M
+(class) s
+/F-gs-font 10 10 SF
+132 296 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 296 M
+(class) s
+/F-gs-font 10 10 SF
+198 296 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 296 M
+(class) s
+/F-gs-font 10 10 SF
+276 296 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 296 M
+(class) s
+/F-gs-font 10 10 SF
+342 296 M
+( RPARM>) s
+18 285 M (359:) s
+48 285 M
+(OpWithParm<DivOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 274 M (360:) s
+/Courier-Bold 10 10 SUF
+48 274 M
+(div) s
+/F-gs-font 10 10 SF
+66 274 M
+(\() s
+/Courier-Bold 10 10 SUF
+72 274 M
+(const) s
+/F-gs-font 10 10 SF
+102 274 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+288 274 M
+(const) s
+/F-gs-font 10 10 SF
+318 274 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 263 M (361:) s
+48 263 M
+({) s
+18 252 M (362:) s
+48 252 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 252 M
+(return) s
+/F-gs-font 10 10 SF
+96 252 M
+( OpWithParm<DivOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >\(ParmPair<LPARM, RPARM>\(left.parm, r) s
+18 241 M (363:) s
+48 241 M
+(};) s
+18 230 M (364:) s
+18 219 M (365:) s
+18 208 M (366:) s
+/Courier-Bold 10 10 SUF
+48 208 M
+(template) s
+/F-gs-font 10 10 SF
+96 208 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 208 M
+(class) s
+/F-gs-font 10 10 SF
+132 208 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 208 M
+(class) s
+/F-gs-font 10 10 SF
+198 208 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 208 M
+(class) s
+/F-gs-font 10 10 SF
+276 208 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 208 M
+(class) s
+/F-gs-font 10 10 SF
+342 208 M
+( RPARM>) s
+18 197 M (367:) s
+48 197 M
+(OpWithParm<DivOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 186 M (368:) s
+/Courier-Bold 10 10 SUF
+48 186 M
+(operator) s
+/F-gs-font 10 10 SF
+96 186 M
+(/\() s
+/Courier-Bold 10 10 SUF
+108 186 M
+(const) s
+/F-gs-font 10 10 SF
+138 186 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+324 186 M
+(const) s
+/F-gs-font 10 10 SF
+354 186 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 175 M (369:) s
+48 175 M
+({) s
+18 164 M (370:) s
+48 164 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 164 M
+(return) s
+/F-gs-font 10 10 SF
+96 164 M
+( div\(left, right\); ) s
+18 153 M (371:) s
+48 153 M
+(};) s
+18 142 M (372:) s
+18 131 M (373:) s
+18 120 M (374:) s
+/Courier-Bold 10 10 SUF
+48 120 M
+(template) s
+/F-gs-font 10 10 SF
+96 120 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 120 M
+(class) s
+/F-gs-font 10 10 SF
+132 120 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 120 M
+(class) s
+/F-gs-font 10 10 SF
+198 120 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 120 M
+(class) s
+/F-gs-font 10 10 SF
+276 120 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 120 M
+(class) s
+/F-gs-font 10 10 SF
+342 120 M
+( RPARM>) s
+18 109 M (375:) s
+48 109 M
+(OpWithParm<SubOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 98 M (376:) s
+/Courier-Bold 10 10 SUF
+48 98 M
+(sub) s
+/F-gs-font 10 10 SF
+66 98 M
+(\() s
+/Courier-Bold 10 10 SUF
+72 98 M
+(const) s
+/F-gs-font 10 10 SF
+102 98 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+288 98 M
+(const) s
+/F-gs-font 10 10 SF
+318 98 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 87 M (377:) s
+48 87 M
+({) s
+18 76 M (378:) s
+48 76 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 76 M
+(return) s
+/F-gs-font 10 10 SF
+96 76 M
+( OpWithParm<SubOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >\(ParmPair<LPARM, RPARM>\(left.parm, r) s
+18 65 M (379:) s
+48 65 M
+(};) s
+18 54 M (380:) s
+18 43 M (381:) s
+/Courier-Bold 10 10 SUF
+48 43 M
+(template) s
+/F-gs-font 10 10 SF
+96 43 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 43 M
+(class) s
+/F-gs-font 10 10 SF
+132 43 M
+( LOP, ) s
+/Courier-Bold 10 10 SUF
+168 43 M
+(class) s
+/F-gs-font 10 10 SF
+198 43 M
+( LPARM, ) s
+/Courier-Bold 10 10 SUF
+246 43 M
+(class) s
+/F-gs-font 10 10 SF
+276 43 M
+( ROP, ) s
+/Courier-Bold 10 10 SUF
+312 43 M
+(class) s
+/F-gs-font 10 10 SF
+342 43 M
+( RPARM>) s
+18 32 M (382:) s
+48 32 M
+(OpWithParm<SubOp<LOP, ROP, LPARM, RPARM>, ParmPair<LPARM, RPARM> >) s
+18 21 M (383:) s
+/Courier-Bold 10 10 SUF
+48 21 M
+(operator) s
+/F-gs-font 10 10 SF
+96 21 M
+(-\() s
+/Courier-Bold 10 10 SUF
+108 21 M
+(const) s
+/F-gs-font 10 10 SF
+138 21 M
+( OpWithParm<LOP, LPARM> &left, ) s
+/Courier-Bold 10 10 SUF
+324 21 M
+(const) s
+/F-gs-font 10 10 SF
+354 21 M
+( OpWithParm<ROP, RPARM> &right\)) s
+18 10 M (384:) s
+48 10 M
+({) s
+_R
+S
+%%Page: (9) 9
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 9 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (9) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 527 M (385:) s
+48 527 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 527 M
+(return) s
+/F-gs-font 10 10 SF
+96 527 M
+( sub\(left, right\); ) s
+18 516 M (386:) s
+48 516 M
+(};) s
+18 505 M (387:) s
+18 494 M (388:) s
+18 483 M (389:) s
+/Courier-Bold 10 10 SUF
+48 483 M
+(template) s
+/F-gs-font 10 10 SF
+96 483 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 483 M
+(class) s
+/F-gs-font 10 10 SF
+132 483 M
+( OP, ) s
+/Courier-Bold 10 10 SUF
+162 483 M
+(class) s
+/F-gs-font 10 10 SF
+192 483 M
+( PARM>) s
+18 472 M (390:) s
+48 472 M
+(OpWithParm<NegateOp<OP, PARM>, PARM>) s
+18 461 M (391:) s
+/Courier-Bold 10 10 SUF
+48 461 M
+(negate) s
+/F-gs-font 10 10 SF
+84 461 M
+(\() s
+/Courier-Bold 10 10 SUF
+90 461 M
+(const) s
+/F-gs-font 10 10 SF
+120 461 M
+( OpWithParm<OP, PARM> &operand\)) s
+18 450 M (392:) s
+48 450 M
+({) s
+18 439 M (393:) s
+48 439 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 439 M
+(return) s
+/F-gs-font 10 10 SF
+96 439 M
+( OpWithParm<NegateOp<OP, PARM>, PARM>\(operand.parm\);) s
+18 428 M (394:) s
+48 428 M
+(};) s
+18 417 M (395:) s
+18 406 M (396:) s
+/Courier-Bold 10 10 SUF
+48 406 M
+(template) s
+/F-gs-font 10 10 SF
+96 406 M
+(<) s
+/Courier-Bold 10 10 SUF
+102 406 M
+(class) s
+/F-gs-font 10 10 SF
+132 406 M
+( OP, ) s
+/Courier-Bold 10 10 SUF
+162 406 M
+(class) s
+/F-gs-font 10 10 SF
+192 406 M
+( PARM>) s
+18 395 M (397:) s
+48 395 M
+(OpWithParm<NegateOp<OP, PARM>, PARM>) s
+18 384 M (398:) s
+/Courier-Bold 10 10 SUF
+48 384 M
+(operator) s
+/F-gs-font 10 10 SF
+96 384 M
+(-\() s
+/Courier-Bold 10 10 SUF
+108 384 M
+(const) s
+/F-gs-font 10 10 SF
+138 384 M
+( OpWithParm<OP, PARM> &operand\)) s
+18 373 M (399:) s
+48 373 M
+({) s
+18 362 M (400:) s
+48 362 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 362 M
+(return) s
+/F-gs-font 10 10 SF
+96 362 M
+( negate\(operand\); ) s
+18 351 M (401:) s
+48 351 M
+(};) s
+18 340 M (402:) s
+18 329 M (403:) s
+18 318 M (404:) s
+18 307 M (405:) s
+48 307 M
+(OpWithParm<LeafOp<ArrayLookupOrdinalParm>, ArrayLookupOrdinalParm>) s
+18 296 M (406:) s
+/Courier-Bold 10 10 SUF
+48 296 M
+(array_read_absolute) s
+/F-gs-font 10 10 SF
+162 296 M
+(\() s
+/Courier-Bold 10 10 SUF
+168 296 M
+(const) s
+/F-gs-font 10 10 SF
+198 296 M
+( DeviceArray1D &g, ) s
+/Courier-Bold 10 10 SUF
+312 296 M
+(int) s
+/F-gs-font 10 10 SF
+330 296 M
+( start, ) s
+/Courier-Bold 10 10 SUF
+378 296 M
+(int) s
+/F-gs-font 10 10 SF
+396 296 M
+( stride\) {) s
+18 285 M (407:) s
+48 285 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 285 M
+(return) s
+/F-gs-font 10 10 SF
+96 285 M
+( OpWithParm<LeafOp<ArrayLookupOrdinalParm>, ArrayLookupOrdinalParm>\(ArrayLookupOrdinalParm\(g, start, st) s
+18 274 M (408:) s
+48 274 M
+(}) s
+18 263 M (409:) s
+18 252 M (410:) s
+18 241 M (411:) s
+48 241 M
+(OpWithParm<LeafOp<ArrayLookupIndexParm>, ArrayLookupIndexParm>) s
+18 230 M (412:) s
+/Courier-Bold 10 10 SUF
+48 230 M
+(array_read_relative) s
+/F-gs-font 10 10 SF
+162 230 M
+(\() s
+/Courier-Bold 10 10 SUF
+168 230 M
+(const) s
+/F-gs-font 10 10 SF
+198 230 M
+( DeviceArray1D &g, ) s
+/Courier-Bold 10 10 SUF
+312 230 M
+(int) s
+/F-gs-font 10 10 SF
+330 230 M
+( shift\) {) s
+18 219 M (413:) s
+48 219 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 219 M
+(return) s
+/F-gs-font 10 10 SF
+96 219 M
+( OpWithParm<LeafOp<ArrayLookupIndexParm>, ArrayLookupIndexParm>\(ArrayLookupIndexParm\(g, shift\)\);) s
+18 208 M (414:) s
+48 208 M
+(}) s
+18 197 M (415:) s
+18 186 M (416:) s
+18 175 M (417:) s
+48 175 M
+(OpWithParm<LeafOp<ArrayLookupOrdinalParm>, ArrayLookupOrdinalParm>) s
+18 164 M (418:) s
+/Courier-Bold 10 10 SUF
+48 164 M
+(DeviceArray1D::read) s
+/F-gs-font 10 10 SF
+162 164 M
+(\() s
+/Courier-Bold 10 10 SUF
+168 164 M
+(int) s
+/F-gs-font 10 10 SF
+186 164 M
+( minx, ) s
+/Courier-Bold 10 10 SUF
+228 164 M
+(int) s
+/F-gs-font 10 10 SF
+246 164 M
+( maxx, ) s
+/Courier-Bold 10 10 SUF
+288 164 M
+(int) s
+/F-gs-font 10 10 SF
+306 164 M
+( stride\) ) s
+/Courier-Bold 10 10 SUF
+360 164 M
+(const) s
+/F-gs-font 10 10 SF
+390 164 M
+( {) s
+18 153 M (419:) s
+48 153 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 153 M
+(return) s
+/F-gs-font 10 10 SF
+96 153 M
+( array_read_absolute\(*) s
+/Courier-Bold 10 10 SUF
+228 153 M
+(this) s
+/F-gs-font 10 10 SF
+252 153 M
+(, minx, stride\); ) s
+18 142 M (420:) s
+48 142 M
+(}) s
+18 131 M (421:) s
+18 120 M (422:) s
+48 120 M
+(OpWithParm<LeafOp<ArrayLookupOrdinalParm>, ArrayLookupOrdinalParm>) s
+18 109 M (423:) s
+/Courier-Bold 10 10 SUF
+48 109 M
+(DeviceArray1D::read) s
+/F-gs-font 10 10 SF
+162 109 M
+(\() s
+/Courier-Bold 10 10 SUF
+168 109 M
+(int) s
+/F-gs-font 10 10 SF
+186 109 M
+( minx\) ) s
+/Courier-Bold 10 10 SUF
+228 109 M
+(const) s
+/F-gs-font 10 10 SF
+258 109 M
+( {) s
+18 98 M (424:) s
+48 98 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 98 M
+(return) s
+/F-gs-font 10 10 SF
+96 98 M
+( array_read_absolute\(*) s
+/Courier-Bold 10 10 SUF
+228 98 M
+(this) s
+/F-gs-font 10 10 SF
+252 98 M
+(, minx, 1\); ) s
+18 87 M (425:) s
+48 87 M
+(}) s
+18 76 M (426:) s
+18 65 M (427:) s
+18 54 M (428:) s
+48 54 M
+(OpWithParm<LeafOp<ArrayLookupIndexParm>, ArrayLookupIndexParm>) s
+18 43 M (429:) s
+48 43 M
+(DeviceArray1D::) s
+/Courier-Bold 10 10 SUF
+138 43 M
+(operator) s
+/F-gs-font 10 10 SF
+186 43 M
+([]\() s
+/Courier-Bold 10 10 SUF
+204 43 M
+(int) s
+/F-gs-font 10 10 SF
+222 43 M
+( i\) ) s
+/Courier-Bold 10 10 SUF
+246 43 M
+(const) s
+/F-gs-font 10 10 SF
+276 43 M
+( {) s
+18 32 M (430:) s
+48 32 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 32 M
+(return) s
+/F-gs-font 10 10 SF
+96 32 M
+( array_read_relative\(*) s
+/Courier-Bold 10 10 SUF
+228 32 M
+(this) s
+/F-gs-font 10 10 SF
+252 32 M
+(, i\); ) s
+18 21 M (431:) s
+48 21 M
+(}) s
+18 10 M (432:) s
+_R
+S
+%%Page: (10) 10
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 10 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (10) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 527 M (433:) s
+48 527 M
+(OpWithParm<LeafOp<ConstantParm>, ConstantParm> ) s
+18 516 M (434:) s
+/Courier-Bold 10 10 SUF
+48 516 M
+(constant) s
+/F-gs-font 10 10 SF
+96 516 M
+(\() s
+/Courier-Bold 10 10 SUF
+102 516 M
+(double) s
+/F-gs-font 10 10 SF
+138 516 M
+( f\) {) s
+18 505 M (435:) s
+48 505 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 505 M
+(return) s
+/F-gs-font 10 10 SF
+96 505 M
+( OpWithParm<LeafOp<ConstantParm>, ConstantParm>\(f\);) s
+18 494 M (436:) s
+48 494 M
+(}) s
+18 483 M (437:) s
+18 472 M (438:) s
+48 472 M
+(OpWithParm<LeafOp<IndexParm>, IndexParm> ) s
+18 461 M (439:) s
+/Courier-Bold 10 10 SUF
+48 461 M
+(index) s
+/F-gs-font 10 10 SF
+78 461 M
+(\(\) {) s
+18 450 M (440:) s
+48 450 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 450 M
+(return) s
+/F-gs-font 10 10 SF
+96 450 M
+( OpWithParm<LeafOp<IndexParm>, IndexParm>\(IndexParm\(\)\);) s
+18 439 M (441:) s
+48 439 M
+(}) s
+18 428 M (442:) s
+18 417 M (443:) s
+48 417 M
+(OpWithParm<LeafOp<RandParm>, RandParm> ) s
+18 406 M (444:) s
+/Courier-Bold 10 10 SUF
+48 406 M
+(rand) s
+/F-gs-font 10 10 SF
+72 406 M
+(\() s
+/Courier-Bold 10 10 SUF
+78 406 M
+(int) s
+/F-gs-font 10 10 SF
+96 406 M
+( seed\) {) s
+18 395 M (445:) s
+48 395 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 395 M
+(return) s
+/F-gs-font 10 10 SF
+96 395 M
+( OpWithParm<LeafOp<RandParm>, RandParm>\(RandParm\(seed\)\);) s
+18 384 M (446:) s
+48 384 M
+(}) s
+18 373 M (447:) s
+18 362 M (448:) s
+18 351 M (449:) s
+18 340 M (450:) s
+/Courier-Bold 10 10 SUF
+48 340 M
+(template) s
+/F-gs-font 10 10 SF
+96 340 M
+( <typename T>) s
+18 329 M (451:) s
+48 329 M
+(__global__ ) s
+/Courier-Bold 10 10 SUF
+114 329 M
+(void) s
+/F-gs-font 10 10 SF
+138 329 M
+( kernel_assign\(T functor, ) s
+/Courier-Bold 10 10 SUF
+294 329 M
+(double) s
+/F-gs-font 10 10 SF
+330 329 M
+( *dst, ) s
+/Courier-Bold 10 10 SUF
+372 329 M
+(int) s
+/F-gs-font 10 10 SF
+390 329 M
+( ordinal_size, ) s
+/Courier-Bold 10 10 SUF
+480 329 M
+(int) s
+/F-gs-font 10 10 SF
+498 329 M
+( idx_start, ) s
+/Courier-Bold 10 10 SUF
+570 329 M
+(int) s
+/F-gs-font 10 10 SF
+588 329 M
+( idx_step\)) s
+18 318 M (452:) s
+48 318 M
+({) s
+18 307 M (453:) s
+48 307 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 307 M
+(// transpose for coalescing since k is the fastest changing index ) s
+/F-gs-font 10 10 SF
+18 296 M (454:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 296 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 296 M
+(int) s
+/F-gs-font 10 10 SF
+78 296 M
+( ord = blockIdx.x * blockDim.x + threadIdx.x; ) s
+18 285 M (455:) s
+18 274 M (456:) s
+48 274 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 274 M
+(if) s
+/F-gs-font 10 10 SF
+72 274 M
+( \(ord < ordinal_size\) {) s
+18 263 M (457:) s
+48 263 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 263 M
+(int) s
+/F-gs-font 10 10 SF
+90 263 M
+( index = idx_start + ord * idx_step;) s
+18 252 M (458:) s
+48 252 M
+(    dst[index] = functor.exec\(ord, index\);) s
+18 241 M (459:) s
+48 241 M
+(  }) s
+18 230 M (460:) s
+48 230 M
+(}) s
+18 219 M (461:) s
+18 208 M (462:) s
+18 197 M (463:) s
+/Courier-Bold 10 10 SUF
+48 197 M
+(template) s
+/F-gs-font 10 10 SF
+96 197 M
+( <typename OP, typename PARM>) s
+18 186 M (464:) s
+/Courier-Bold 10 10 SUF
+48 186 M
+(bool) s
+/F-gs-font 10 10 SF
+72 186 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 186 M
+(execute_expression) s
+/F-gs-font 10 10 SF
+186 186 M
+(\() s
+/Courier-Bold 10 10 SUF
+192 186 M
+(const) s
+/F-gs-font 10 10 SF
+222 186 M
+( OpWithParm<OP,PARM> &func, DeviceArray1D &dst, ) s
+/Courier-Bold 10 10 SUF
+510 186 M
+(int) s
+/F-gs-font 10 10 SF
+528 186 M
+( ordinal_size, ) s
+/Courier-Bold 10 10 SUF
+618 186 M
+(int) s
+/F-gs-font 10 10 SF
+636 186 M
+( idx_start, ) s
+/Courier-Bold 10 10 SUF
+708 186 M
+(i) s
+/F-gs-font 10 10 SF
+18 175 M (465:) s
+/Courier-Bold 10 10 SUF
+48 175 M
+({) s
+/F-gs-font 10 10 SF
+18 164 M (466:) s
+/Courier-Bold 10 10 SUF
+48 164 M
+(  Range ord_range\(0, ordinal_size-1\);) s
+/F-gs-font 10 10 SF
+18 153 M (467:) s
+/Courier-Bold 10 10 SUF
+48 153 M
+(  Range idx_range\(idx_start, idx_start + \(ordinal_size-1\) * idx_step\);) s
+/F-gs-font 10 10 SF
+18 142 M (468:) s
+/Courier-Bold 10 10 SUF
+/F-gs-font 10 10 SF
+18 131 M (469:) s
+/Courier-Bold 10 10 SUF
+48 131 M
+(  typename OpWithParm<OP,PARM>::DeviceParm dp = func.kernel_data\(\); ) s
+/F-gs-font 10 10 SF
+18 120 M (470:) s
+/Courier-Bold 10 10 SUF
+/Courier-Oblique 10 10 SUF
+48 120 M
+(//printf\("passing %d bytes \(out of %d\)\\n", sizeof\(dp\), sizeof\(func\)\);) s
+/F-gs-font 10 10 SF
+18 109 M (471:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 98 M (472:) s
+48 98 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 98 M
+(if) s
+/F-gs-font 10 10 SF
+72 98 M
+( \(!func.validate\(ord_range, idx_range\)\) {) s
+18 87 M (473:) s
+48 87 M
+(    printf\() s
+/Courier-Bold 10 10 SUF
+114 87 M
+("Range invalid \(ord, idx\):\\n") s
+/F-gs-font 10 10 SF
+288 87 M
+(\);) s
+18 76 M (474:) s
+48 76 M
+(    ord_range.print\(\);) s
+18 65 M (475:) s
+48 65 M
+(    idx_range.print\(\);) s
+18 54 M (476:) s
+48 54 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 54 M
+(return) s
+/F-gs-font 10 10 SF
+108 54 M
+( false;) s
+18 43 M (477:) s
+48 43 M
+(  }) s
+18 32 M (478:) s
+18 21 M (479:) s
+18 10 M (480:) s
+48 10 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 10 M
+(int) s
+/F-gs-font 10 10 SF
+78 10 M
+( threadsInX = 512;) s
+_R
+S
+%%Page: (11) 11
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 11 def
+/fname (operators.h) def
+/fdir (.) def
+/ftail (operators.h) def
+% User defined strings:
+/pagenumstr (11) def
+/moddatestr (08/12/21) def
+/modtimestr (14:50:39) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 527 M (481:) s
+48 527 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 527 M
+(int) s
+/F-gs-font 10 10 SF
+78 527 M
+( blocksInX = \(ordinal_size+threadsInX-1\)/threadsInX;) s
+18 516 M (482:) s
+48 516 M
+( ) s
+18 505 M (483:) s
+48 505 M
+(  kernel_assign<<<blocksInX, threadsInX>>>\(dp, &dst.at\(0\), ordinal_size, idx_start, idx_step\); ) s
+18 494 M (484:) s
+48 494 M
+(  cudaThreadSynchronize\(\);) s
+18 483 M (485:) s
+48 483 M
+(  cudaError_t e = cudaGetLastError\(\);) s
+18 472 M (486:) s
+48 472 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 472 M
+(if) s
+/F-gs-font 10 10 SF
+72 472 M
+( \(e\) {) s
+18 461 M (487:) s
+48 461 M
+(    printf\() s
+/Courier-Bold 10 10 SUF
+114 461 M
+("Error: %s\\n") s
+/F-gs-font 10 10 SF
+192 461 M
+(, cudaGetErrorString\(e\)\);) s
+18 450 M (488:) s
+48 450 M
+(  }) s
+18 439 M (489:) s
+18 428 M (490:) s
+48 428 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 428 M
+(return) s
+/F-gs-font 10 10 SF
+96 428 M
+( true; ) s
+18 417 M (491:) s
+48 417 M
+(}) s
+18 406 M (492:) s
+18 395 M (493:) s
+18 384 M (494:) s
+18 373 M (495:) s
+_R
+S
+%%Trailer
+%%Pages: 11
+%%DocumentNeededResources: font Times-Roman Courier-Oblique Courier-Bold 
+%%+ font Courier Times-Bold 
+%%EOF
